@@ -1,8 +1,11 @@
 var wrappy = require('wrappy')
 var reqs = Object.create(null)
 var once = require('once')
+var plimit = require('p-limit')
 
 module.exports = wrappy(inflight)
+
+const limit = plimit(500);
 
 function inflight (key, cb) {
   if (reqs[key]) {
@@ -10,7 +13,7 @@ function inflight (key, cb) {
     return null
   } else {
     reqs[key] = [cb]
-    return makeres(key)
+    return limit(() => makeres(key))
   }
 }
 
